@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fff5fc;
+  --foreground: #3f0d1f;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-display);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+::selection {
+  background: #ffb8d0;
+  color: #2d0a14;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Botão físico: afunda ao toque/clique (respeitar motion-reduce abaixo) */
+button.btn-press:not(:disabled),
+a.btn-press {
+  transition:
+    transform 0.08s cubic-bezier(0.33, 1, 0.68, 1),
+    box-shadow 0.08s ease-out;
+}
+button.btn-press:not(:disabled):active,
+a.btn-press:active {
+  transform: translateY(2px) scale(0.98);
+}
+
+button.btn-press-raised:not(:disabled),
+a.btn-press-raised {
+  box-shadow: 0 4px 0 rgb(190 24 93 / 0.2);
+}
+
+button.btn-press-raised:not(:disabled):active,
+a.btn-press-raised:active {
+  box-shadow: 0 1px 0 rgb(190 24 93 / 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button.btn-press:not(:disabled):active,
+  a.btn-press:active {
+    transform: none;
+  }
+}
