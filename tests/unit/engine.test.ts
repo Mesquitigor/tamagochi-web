@@ -177,7 +177,7 @@ describe("applyDecay", () => {
     const highCare = makePet({
       born_at: new Date(born).toISOString(),
       stage: "baby",
-      character_type: "marutchi",
+      character_type: "baby_cared",
       hunger: 5,
       happiness: 5,
       last_decay_at: new Date(born).toISOString(),
@@ -195,7 +195,7 @@ describe("applyDecay", () => {
     const lowCare = makePet({
       born_at: new Date(born).toISOString(),
       stage: "baby",
-      character_type: "marutchi",
+      character_type: "baby_cared",
       hunger: 0,
       happiness: 0,
       last_decay_at: new Date(whenHighWouldChild - 30_000).toISOString(),

@@ -20,6 +20,11 @@ import { Screen } from "@/components/tamagotchi/Screen";
 import { Pet } from "@/components/tamagotchi/Pet";
 import { DeviceButtons } from "@/components/tamagotchi/Buttons";
 import { StatsModal } from "@/components/tamagotchi/StatsModal";
+import { SetupScreen } from "@/components/tamagotchi/SetupScreen";
+import { NicknameSetupScreen } from "@/components/tamagotchi/NicknameSetupScreen";
+import { ColorModal } from "@/components/tamagotchi/ColorModal";
+import { LeaderboardModal } from "@/components/tamagotchi/LeaderboardModal";
+import { ProfileModal } from "@/components/tamagotchi/ProfileModal";
 import { FeedModal } from "@/components/tamagotchi/FeedModal";
 import { GameModal } from "@/components/tamagotchi/GameModal";
 import { NotificationsModal } from "@/components/tamagotchi/NotificationsModal";
@@ -28,7 +33,17 @@ import { playBeep } from "@/lib/sound";
 import { usePetStore } from "@/stores/petStore";
 
 export default function PlayPage() {
-  const { pet, loading, error, refresh, doAction, rename, resetPet } = usePet();
+  const {
+    pet,
+    loading,
+    error,
+    refresh,
+    doAction,
+    updatePet,
+    rename,
+    resetPet,
+    saveNickname,
+  } = usePet();
   const setLast = usePetStore((s) => s.setLast);
   const { supported, subscribed, subscribe, unsubscribe } = useNotifications();
 
@@ -38,13 +53,69 @@ export default function PlayPage() {
   const [statsOpen, setStatsOpen] = useState(false);
   const [feedOpen, setFeedOpen] = useState(false);
   const [gameOpen, setGameOpen] = useState(false);
-  const [nameOpen, setNameOpen] = useState(false);
-  const [nameDraft, setNameDraft] = useState("");
-  const [overlayAnim, setOverlayAnim] = useState<PetAnimationState | null>(null);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [profileBusy, setProfileBusy] = useState(false);
+  const [colorOpen, setColorOpen] = useState(false);
+  const [leaderboardOpen, setLeaderboardOpen] = useState(false);
+  const [setupBusy, setSetupBusy] = useState(false);
+  const [colorBusy, setColorBusy] = useState(false);
+  const [overlayAnim, setOverlayAnim] = useState<PetAnimationState | null>(
+    null,
+  );
+  type ProfileGateState =
+    | { status: "loading" }
+    | {
+        status: "ready";
+        nicknameSetupDone: boolean;
+        nickname: string;
+      };
+  const [profileGate, setProfileGate] = useState<ProfileGateState>({
+    status: "loading",
+  });
 
   useEffect(() => {
     if (pet) setLast(pet);
   }, [pet, setLast]);
+
+  useEffect(() => {
+    if (!pet) return;
+    let cancelled = false;
+    setProfileGate({ status: "loading" });
+    void fetch("/api/profile")
+      .then(async (r) => {
+        const j = (await r.json()) as {
+          nickname?: string;
+          nickname_setup_done?: boolean;
+        };
+        if (cancelled) return;
+        if (!r.ok) {
+          setProfileGate({
+            status: "ready",
+            nicknameSetupDone: false,
+            nickname: "",
+          });
+          return;
+        }
+        setProfileGate({
+          status: "ready",
+          nicknameSetupDone: j.nickname_setup_done === true,
+          nickname: j.nickname ?? "",
+        });
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setProfileGate({
+            status: "ready",
+            nicknameSetupDone: false,
+            nickname: "",
+          });
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- só refetch quando muda pet.id (evitar cada tick do jogo)
+  }, [pet?.id]);
 
   useGameLoop(refresh, 50_000);
 
@@ -109,6 +180,7 @@ export default function PlayPage() {
           break;
         case "discipline":
           await doAction("discipline");
+          setOverlayAnim("scolded");
           playBeep("low");
           break;
         case "attention":
@@ -161,6 +233,105 @@ export default function PlayPage() {
     );
   }
 
+  if (profileGate.status === "loading") {
+    return (
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-3 bg-gradient-to-b from-[#fff5fc] via-[#ffe8f2] to-[#ffd6e8] px-4">
+        <div className="h-12 w-12 animate-pulse rounded-full bg-pink-300/80" />
+        <p className="text-sm text-pink-800/70">A preparar a tua conta…</p>
+      </div>
+    );
+  }
+
+  const needsNicknameOnboarding = !profileGate.nicknameSetupDone;
+
+  if (needsNicknameOnboarding) {
+    return (
+      <div className="min-h-dvh bg-gradient-to-b from-[#fff5fc] via-[#ffe8f2] to-[#ffd6e8] px-3 py-6">
+        <motion.header
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mx-auto mb-4 flex max-w-md items-center justify-between gap-2"
+        >
+          <div>
+            <h1 className="text-lg font-bold text-pink-950">Tamagotchi Web</h1>
+            <p className="text-xs text-pink-800/65">Primeiro passo · apelido</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => void signOut()}
+            className="btn-press rounded-full bg-pink-900/10 px-3 py-1.5 text-xs text-pink-900 active:bg-pink-900/20"
+          >
+            Sair
+          </button>
+        </motion.header>
+        <Device shellThemeId={pet.color_theme}>
+          <Screen>
+            <NicknameSetupScreen
+              busy={setupBusy}
+              onSubmit={async (nickname) => {
+                setSetupBusy(true);
+                try {
+                  await saveNickname(nickname);
+                  setProfileGate({
+                    status: "ready",
+                    nicknameSetupDone: true,
+                    nickname,
+                  });
+                  playBeep("ok");
+                } finally {
+                  setSetupBusy(false);
+                }
+              }}
+            />
+          </Screen>
+        </Device>
+      </div>
+    );
+  }
+
+  const needsSetup = pet.sex === null;
+
+  if (needsSetup) {
+    return (
+      <div className="min-h-dvh bg-gradient-to-b from-[#fff5fc] via-[#ffe8f2] to-[#ffd6e8] px-3 py-6">
+        <motion.header
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mx-auto mb-4 flex max-w-md items-center justify-between gap-2"
+        >
+          <div>
+            <h1 className="text-lg font-bold text-pink-950">Tamagotchi Web</h1>
+            <p className="text-xs text-pink-800/65">Novo tamagotchi</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => void signOut()}
+            className="btn-press rounded-full bg-pink-900/10 px-3 py-1.5 text-xs text-pink-900 active:bg-pink-900/20"
+          >
+            Sair
+          </button>
+        </motion.header>
+        <Device shellThemeId={pet.color_theme}>
+          <Screen>
+            <SetupScreen
+              defaultName={pet.name}
+              busy={setupBusy}
+              onSubmit={async (name, sex) => {
+                setSetupBusy(true);
+                try {
+                  await updatePet({ name, sex });
+                  playBeep("ok");
+                } finally {
+                  setSetupBusy(false);
+                }
+              }}
+            />
+          </Screen>
+        </Device>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-dvh bg-gradient-to-b from-[#fff5fc] via-[#ffe8f2] to-[#ffd6e8] px-3 py-6">
       <motion.header
@@ -190,13 +361,26 @@ export default function PlayPage() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setNameDraft(pet.name);
-              setNameOpen(true);
-            }}
+            onClick={() => setLeaderboardOpen(true)}
             className="btn-press rounded-full bg-white/80 px-3 py-1.5 text-xs font-medium text-pink-800 shadow-sm ring-1 ring-pink-200"
           >
-            Nome
+            Placar
+          </button>
+          {pet.is_alive ? (
+            <button
+              type="button"
+              onClick={() => setColorOpen(true)}
+              className="btn-press rounded-full bg-white/80 px-3 py-1.5 text-xs font-medium text-pink-800 shadow-sm ring-1 ring-pink-200"
+            >
+              Cor
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => setProfileOpen(true)}
+            className="btn-press rounded-full bg-white/80 px-3 py-1.5 text-xs font-medium text-pink-800 shadow-sm ring-1 ring-pink-200"
+          >
+            Perfil
           </button>
           <button
             type="button"
@@ -208,7 +392,7 @@ export default function PlayPage() {
         </div>
       </motion.header>
 
-      <Device>
+      <Device shellThemeId={pet.color_theme}>
         <Screen
           topBar={
             pet.is_alive ? (
@@ -216,6 +400,7 @@ export default function PlayPage() {
                 icons={lcdTopIcons}
                 active={activeIcon}
                 onSelect={(id) => void onIcon(id)}
+                lightsOn={pet.is_lights_on}
               />
             ) : undefined
           }
@@ -335,34 +520,56 @@ export default function PlayPage() {
         }}
       />
 
-      <Modal open={nameOpen} onClose={() => setNameOpen(false)} title="Nome do tamagotchi">
-        <form
-          className="flex flex-col gap-3"
-          onSubmit={(e) => {
-            e.preventDefault();
-            void rename(nameDraft.trim())
-              .then(() => {
-                setNameOpen(false);
-                playBeep("ok");
-              })
-              .catch(() => playBeep("low"));
-          }}
-        >
-          <input
-            value={nameDraft}
-            onChange={(e) => setNameDraft(e.target.value)}
-            maxLength={20}
-            className="rounded-2xl border-2 border-pink-200 px-3 py-2 text-pink-950 outline-none focus:border-pink-400"
-            placeholder="Até 20 letras"
-          />
-          <button
-            type="submit"
-            className="btn-press btn-press-raised rounded-2xl bg-pink-500 py-2.5 font-semibold text-white"
-          >
-            Salvar
-          </button>
-        </form>
-      </Modal>
+      <ColorModal
+        open={colorOpen}
+        onClose={() => setColorOpen(false)}
+        currentTheme={pet.color_theme}
+        busy={colorBusy}
+        onPick={async (id) => {
+          setColorBusy(true);
+          try {
+            await updatePet({ color_theme: id });
+            setColorOpen(false);
+            playBeep("ok");
+          } catch {
+            playBeep("low");
+          } finally {
+            setColorBusy(false);
+          }
+        }}
+      />
+      <LeaderboardModal
+        open={leaderboardOpen}
+        onClose={() => setLeaderboardOpen(false)}
+      />
+      <ProfileModal
+        open={profileOpen}
+        onClose={() => setProfileOpen(false)}
+        petName={pet.name}
+        nickname={
+          profileGate.status === "ready" ? profileGate.nickname : ""
+        }
+        busy={profileBusy}
+        onSave={async ({ name, nickname }) => {
+          setProfileBusy(true);
+          try {
+            await rename(name);
+            await saveNickname(nickname);
+            setProfileGate((prev) =>
+              prev.status === "ready"
+                ? { ...prev, nickname }
+                : prev,
+            );
+            setProfileOpen(false);
+            playBeep("ok");
+          } catch {
+            playBeep("low");
+            throw new Error("Não foi possível guardar.");
+          } finally {
+            setProfileBusy(false);
+          }
+        }}
+      />
 
       <p className="mx-auto mt-6 max-w-sm text-center text-[11px] text-pink-900/45">
         Dica: instale o Tamagotchi Web no ecrã inicial para o teu tamagotchi te avisar

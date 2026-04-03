@@ -2,7 +2,7 @@
   "name": "Tamagotchi Web",
   "short_name": "Tamagotchi Web",
   "description": "O teu tamagotchi no telemóvel",
-  "start_url": "/play",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#fef3f8",
   "theme_color": "#ff8fb8",

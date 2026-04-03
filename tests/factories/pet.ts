@@ -7,8 +7,10 @@ export function makePet(overrides: Partial<PetRow> = {}): PetRow {
     id: "pet-test-1",
     user_id: "user-test-1",
     name: "Tamago",
+    sex: "male",
+    color_theme: null,
     stage: "baby",
-    character_type: "marutchi",
+    character_type: "baby_cared",
     hunger: 5,
     happiness: 5,
     discipline: 2,
@@ -25,6 +27,7 @@ export function makePet(overrides: Partial<PetRow> = {}): PetRow {
     last_event_at: ISO,
     born_at: ISO,
     created_at: ISO,
+    died_at: null,
     ...overrides,
   };
 }

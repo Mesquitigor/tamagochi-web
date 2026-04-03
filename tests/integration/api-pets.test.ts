@@ -129,23 +129,49 @@ function supabaseForAction(opts: {
   };
 }
 
-function supabaseForReset(
-  user: { id: string } | null,
-  pet: Record<string, unknown>,
-) {
+function supabaseForReset(opts: {
+  user: { id: string } | null;
+  existing: Record<string, unknown> | null;
+  updated: Record<string, unknown>;
+}) {
+  let petsCalls = 0;
   return {
     auth: {
-      getUser: vi.fn().mockResolvedValue({ data: { user } }),
+      getUser: vi.fn().mockResolvedValue({ data: { user: opts.user } }),
     },
-    from: vi.fn(() => ({
-      update: vi.fn(() => ({
-        eq: vi.fn(() => ({
+    from: vi.fn((table: string) => {
+      if (table === "pet_records") {
+        return {
+          insert: vi.fn().mockResolvedValue({ error: null }),
+        };
+      }
+      if (table !== "pets") {
+        return {};
+      }
+      petsCalls += 1;
+      if (petsCalls === 1) {
+        return {
           select: vi.fn(() => ({
-            single: vi.fn().mockResolvedValue({ data: pet, error: null }),
+            eq: vi.fn(() => ({
+              maybeSingle: vi
+                .fn()
+                .mockResolvedValue({ data: opts.existing, error: null }),
+            })),
+          })),
+        };
+      }
+      return {
+        update: vi.fn(() => ({
+          eq: vi.fn(() => ({
+            select: vi.fn(() => ({
+              single: vi
+                .fn()
+                .mockResolvedValue({ data: opts.updated, error: null }),
+            })),
           })),
         })),
-      })),
-    })),
+      };
+    }),
   };
 }
 
@@ -234,6 +260,48 @@ describe("PATCH /api/pets", () => {
     const json = (await res.json()) as { pet: { name: string } };
     expect(json.pet.name).toBe("Pipi");
   });
+
+  it("400 patch vazio", async () => {
+    mockCreate.mockResolvedValue(
+      supabaseForPatch({ user: { id: "u1" }, updated: dbPetRow() }) as never,
+    );
+    const res = await PATCH(
+      new Request("http://localhost", {
+        method: "PATCH",
+        body: JSON.stringify({}),
+      }),
+    );
+    expect(res.status).toBe(400);
+  });
+
+  it("200 só cor", async () => {
+    const updated = dbPetRow({ color_theme: "rosa" });
+    mockCreate.mockResolvedValue(
+      supabaseForPatch({ user: { id: "u1" }, updated }) as never,
+    );
+    const res = await PATCH(
+      new Request("http://localhost", {
+        method: "PATCH",
+        body: JSON.stringify({ color_theme: "rosa" }),
+      }),
+    );
+    expect(res.status).toBe(200);
+    const json = (await res.json()) as { pet: { color_theme: string | null } };
+    expect(json.pet.color_theme).toBe("rosa");
+  });
+
+  it("400 tema de cor inválido", async () => {
+    mockCreate.mockResolvedValue(
+      supabaseForPatch({ user: { id: "u1" }, updated: dbPetRow() }) as never,
+    );
+    const res = await PATCH(
+      new Request("http://localhost", {
+        method: "PATCH",
+        body: JSON.stringify({ color_theme: "unicornio" }),
+      }),
+    );
+    expect(res.status).toBe(400);
+  });
 });
 
 describe("POST /api/pets/action", () => {
@@ -289,14 +357,29 @@ describe("POST /api/pets/reset", () => {
       stage: "egg",
       character_type: "egg",
       name: "Tamago",
+      sex: null,
+      color_theme: null,
+    });
+    const after = dbPetRow({
+      ...egg,
+      id: "p1",
+      user_id: "u1",
     });
     mockCreate.mockResolvedValue(
-      supabaseForReset({ id: "u1" }, egg) as never,
+      supabaseForReset({
+        user: { id: "u1" },
+        existing: egg,
+        updated: after,
+      }) as never,
     );
     const res = await POST_RESET();
     expect(res.status).toBe(200);
-    const json = (await res.json()) as { pet: { stage: string } };
+    const json = (await res.json()) as {
+      pet: { stage: string; sex: string | null; color_theme: string | null };
+    };
     expect(json.pet.stage).toBe("egg");
+    expect(json.pet.sex).toBeNull();
+    expect(json.pet.color_theme).toBeNull();
   });
 });
 

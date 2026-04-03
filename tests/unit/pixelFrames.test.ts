@@ -9,6 +9,7 @@ const states: PetAnimationState[] = [
   "sleeping",
   "happy",
   "sad",
+  "scolded",
   "sick",
   "pooping",
   "death",

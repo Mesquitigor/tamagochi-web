@@ -22,6 +22,19 @@ export function validatePasswordPresent(password: string): string | null {
   return null;
 }
 
+/** Para o formulário de registo: ambas preenchidas e iguais. */
+export function validatePasswordConfirmation(
+  password: string,
+  confirmation: string,
+): string | null {
+  const p = validatePasswordPresent(password);
+  if (p) return p;
+  if (confirmation.trim().length === 0) return "Repete a palavra-passe.";
+  if (password !== confirmation)
+    return "As palavras-passe não coincidem.";
+  return null;
+}
+
 /** Mensagens do Supabase / rede ligeiramente mais claras para o utilizador. */
 export function friendlyAuthMessage(message: string): string {
   const m = message.trim();

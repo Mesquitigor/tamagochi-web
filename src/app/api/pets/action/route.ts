@@ -4,35 +4,8 @@ import { updatePetOrOmitLastEventAt } from "@/lib/supabase/petsPersist";
 import { reduceAction } from "@/lib/game/engine";
 import { evaluateNotificationTriggers } from "@/lib/game/notifications";
 import type { PetAction } from "@/types/pet";
+import { petRowFromDb } from "@/lib/pets/fromDbRow";
 import webpush from "web-push";
-
-function rowFromDb(r: Record<string, unknown>) {
-  return {
-    id: r.id as string,
-    user_id: r.user_id as string,
-    name: r.name as string,
-    stage: r.stage as string,
-    character_type: r.character_type as string,
-    hunger: r.hunger as number,
-    happiness: r.happiness as number,
-    discipline: r.discipline as number,
-    weight: r.weight as number,
-    age_minutes: r.age_minutes as number,
-    is_alive: r.is_alive as boolean,
-    is_sick: r.is_sick as boolean,
-    is_sleeping: r.is_sleeping as boolean,
-    is_lights_on: r.is_lights_on as boolean,
-    poop_count: r.poop_count as number,
-    care_misses: r.care_misses as number,
-    last_interaction_at: r.last_interaction_at as string,
-    last_decay_at: r.last_decay_at as string,
-    last_event_at:
-      (r.last_event_at as string | undefined) ??
-      (r.last_decay_at as string),
-    born_at: r.born_at as string,
-    created_at: r.created_at as string,
-  };
-}
 
 async function maybePush(
   userId: string,
@@ -101,15 +74,19 @@ export async function POST(req: Request) {
   if (error || !row)
     return NextResponse.json({ error: error?.message ?? "No pet" }, { status: 404 });
 
-  const prev = rowFromDb(row as Record<string, unknown>);
+  const prev = petRowFromDb(row as Record<string, unknown>);
   if (!prev.is_alive)
     return NextResponse.json({ error: "Pet gone" }, { status: 400 });
 
-  const { pet: next, randomEventAlert } = reduceAction(
+  const { pet: nextPet, randomEventAlert } = reduceAction(
     prev,
     action,
     json.playGuess,
   );
+  let next = nextPet;
+  if (!next.is_alive && !next.died_at) {
+    next = { ...next, died_at: new Date().toISOString() };
+  }
 
   const { error: upErr } = await updatePetOrOmitLastEventAt(supabase, next.id, {
     hunger: next.hunger,
@@ -128,6 +105,7 @@ export async function POST(req: Request) {
     last_interaction_at: next.last_interaction_at,
     last_decay_at: next.last_decay_at,
     last_event_at: next.last_event_at,
+    died_at: next.is_alive ? null : next.died_at,
   });
 
   if (upErr)

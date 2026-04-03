@@ -4,6 +4,12 @@ import { useCallback, useEffect, useState } from "react";
 import type { PetAction } from "@/types/pet";
 import type { PetRow } from "@/types/pet";
 
+export type PetUpdatePatch = {
+  name?: string;
+  sex?: "male" | "female";
+  color_theme?: string | null;
+};
+
 export function usePet() {
   const [pet, setPet] = useState<PetRow | null>(null);
   const [loading, setLoading] = useState(true);
@@ -12,6 +18,17 @@ export function usePet() {
   const refresh = useCallback(async () => {
     setError(null);
     const r = await fetch("/api/pets");
+    if (r.status === 401) {
+      setLoading(false);
+      setPet(null);
+      if (typeof window !== "undefined") {
+        const next = encodeURIComponent(
+          `${window.location.pathname}${window.location.search}`,
+        );
+        window.location.assign(`/login?next=${next}`);
+      }
+      return;
+    }
     if (!r.ok) {
       setError((await r.json().catch(() => ({})))?.error ?? "Erro ao carregar");
       setLoading(false);
@@ -42,16 +59,21 @@ export function usePet() {
     return j.pet!;
   }, []);
 
-  const rename = useCallback(async (name: string) => {
+  const updatePet = useCallback(async (patch: PetUpdatePatch) => {
     const r = await fetch("/api/pets", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name }),
+      body: JSON.stringify(patch),
     });
     const j = (await r.json()) as { pet?: PetRow; error?: string };
-    if (!r.ok) throw new Error(j.error ?? "Nome inválido");
+    if (!r.ok) throw new Error(j.error ?? "Atualização inválida");
     setPet(j.pet!);
   }, []);
+
+  const rename = useCallback(
+    async (name: string) => updatePet({ name }),
+    [updatePet],
+  );
 
   const resetPet = useCallback(async () => {
     const r = await fetch("/api/pets/reset", { method: "POST" });
@@ -60,5 +82,25 @@ export function usePet() {
     setPet(j.pet as PetRow);
   }, []);
 
-  return { pet, loading, error, refresh, doAction, rename, resetPet };
+  const saveNickname = useCallback(async (nickname: string) => {
+    const r = await fetch("/api/profile", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nickname }),
+    });
+    const j = (await r.json()) as { error?: string };
+    if (!r.ok) throw new Error(j.error ?? "Erro ao guardar apelido");
+  }, []);
+
+  return {
+    pet,
+    loading,
+    error,
+    refresh,
+    doAction,
+    updatePet,
+    rename,
+    resetPet,
+    saveNickname,
+  };
 }

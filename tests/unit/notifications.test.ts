@@ -55,7 +55,7 @@ describe("evaluateNotificationTriggers", () => {
 
   it("evolução quando estágio mudou", () => {
     const prev = makePet({ stage: "baby" });
-    const pet = makePet({ stage: "child", character_type: "tamatchi" });
+    const pet = makePet({ stage: "child", character_type: "child_cared" });
     const n = evaluateNotificationTriggers(pet, prev);
     expect(n?.kind).toBe("evolve");
   });

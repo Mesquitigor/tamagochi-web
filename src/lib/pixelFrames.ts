@@ -115,6 +115,45 @@ const happy = [
   "                ",
 ];
 
+/** Depois de bronca: semblante fechado + tremer um pouco nas pernas. */
+const scold1 = [
+  "                ",
+  "                ",
+  "      BBBB      ",
+  "    BBBBBBBB    ",
+  "   BBBBBBBBBB   ",
+  "  BBBEWWEEWBBB  ",
+  "  BBBBBBBBBBBB  ",
+  "  BBBMWWMWBBBB  ",
+  "   BBBBBBBBBB   ",
+  "    BBBBBBBB    ",
+  "     BB  BB     ",
+  "                ",
+  "                ",
+  "                ",
+  "                ",
+  "                ",
+];
+
+const scold2 = [
+  "                ",
+  "                ",
+  "      BBBB      ",
+  "    BBBBBBBB    ",
+  "   BBBBBBBBBB   ",
+  "  BBBEWWEEWBBB  ",
+  "  BBBBBBBBBBBB  ",
+  "  BBBMWWMWBBBB  ",
+  "   BBBBBBBBBB   ",
+  "    BBBBBBBB    ",
+  "    BBB  BB     ",
+  "                ",
+  "                ",
+  "                ",
+  "                ",
+  "                ",
+];
+
 const poop = [
   "                ",
   "                ",
@@ -172,39 +211,44 @@ const walk2 = [
   "                ",
 ];
 
+/**
+ * Ovo oval: A = rebordo fechado (esq. e dir.), B = casca, W = brilho.
+ * egg2 só desloca o W — para eclosão; idle = um frame + CSS no Pet.
+ */
 const egg = [
   "                ",
   "                ",
-  "      AAAA      ",
-  "    AAAAAAAA    ",
-  "   AAAAAAAAAA   ",
-  "  AAAAAAAAAAAA  ",
-  "  AAAAAAAAAAAA  ",
-  "  AAAAABAAAAAA  ",
-  "   AAAAAAAAAA   ",
-  "    AAAAAAAA    ",
-  "      AAAA      ",
-  "                ",
-  "                ",
+  "     ABBBA      ",
+  "    ABBBBBA     ",
+  "   ABBBBBBBA    ",
+  "  ABBBBBBBBBA   ",
+  " ABBBBBBBBBBBA  ",
+  " ABBBBWBBBBBBA  ",
+  " ABBBBBBBBBBBA  ",
+  "  ABBBBBBBBBA   ",
+  "   ABBBBBBBA    ",
+  "    ABBBBBA     ",
+  "     ABBBA      ",
   "                ",
   "                ",
   "                ",
 ];
 
+/** Brilho noutra coluna — forma idêntica ao egg. */
 const egg2 = [
   "                ",
   "                ",
-  "      AAAA      ",
-  "    AAAAAAAA    ",
-  "   AAAAAAAAAA   ",
-  "  AAAAAAAAAAAA  ",
-  "  AAAAAAAAAAAA  ",
-  "  AAAABBAAAAAA  ",
-  "   AAAAAAAAAA   ",
-  "    AAAAAAAA    ",
-  "      AAAA      ",
-  "                ",
-  "                ",
+  "     ABBBA      ",
+  "    ABBBBBA     ",
+  "   ABBBBBBBA    ",
+  "  ABBBBBBBBBA   ",
+  " ABBBBBBBBBBBA  ",
+  " ABBBBBWBBBBBA  ",
+  " ABBBBBBBBBBBA  ",
+  "  ABBBBBBBBBA   ",
+  "   ABBBBBBBA    ",
+  "    ABBBBBA     ",
+  "     ABBBA      ",
   "                ",
   "                ",
   "                ",
@@ -241,6 +285,7 @@ export const framesFor: Record<
   sleeping: [sleep, sleep],
   happy: [happy, idle],
   sad: [idle, idle2],
+  scolded: [scold1, scold2],
   sick: [sick, sick],
   pooping: [poop, poop, idle],
   death: [dead, dead, dead],

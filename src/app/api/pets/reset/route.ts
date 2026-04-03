@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { updatePetsByUserIdOrOmitLastEventAt } from "@/lib/supabase/petsPersist";
+import { petRowFromDb } from "@/lib/pets/fromDbRow";
+import { petRecordRowFromDeadPet } from "@/lib/pets/petRecordInsert";
 
 export async function POST() {
   const supabase = await createClient();
@@ -10,12 +12,41 @@ export async function POST() {
   if (!user)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const { data: existing, error: selErr } = await supabase
+    .from("pets")
+    .select("*")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (selErr)
+    return NextResponse.json({ error: selErr.message }, { status: 500 });
+
+  if (existing) {
+    const prev = petRowFromDb(existing as Record<string, unknown>);
+    const recordRow = petRecordRowFromDeadPet(prev, user.id);
+    if (recordRow) {
+      const { error: insErr } = await supabase
+        .from("pet_records")
+        .insert(recordRow);
+      if (insErr) {
+        const missing =
+          insErr.code === "42P01" ||
+          (insErr.message?.toLowerCase().includes("pet_records") &&
+            insErr.message?.toLowerCase().includes("does not exist"));
+        if (!missing)
+          return NextResponse.json({ error: insErr.message }, { status: 500 });
+      }
+    }
+  }
+
   const now = new Date().toISOString();
   const { data: pet, error } = await updatePetsByUserIdOrOmitLastEventAt(
     supabase,
     user.id,
     {
       name: "Tamago",
+      sex: null,
+      color_theme: null,
       stage: "egg",
       character_type: "egg",
       hunger: 5,
@@ -33,11 +64,14 @@ export async function POST() {
       last_decay_at: now,
       last_event_at: now,
       born_at: now,
+      died_at: null,
     },
   );
 
   if (error)
     return NextResponse.json({ error: error.message }, { status: 500 });
 
-  return NextResponse.json({ pet });
+  return NextResponse.json({
+    pet: petRowFromDb(pet as Record<string, unknown>),
+  });
 }

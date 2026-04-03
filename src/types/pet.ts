@@ -7,6 +7,7 @@ export type PetAnimationState =
   | "sleeping"
   | "happy"
   | "sad"
+  | "scolded"
   | "sick"
   | "pooping"
   | "death"
@@ -26,6 +27,10 @@ export interface PetRow {
   id: string;
   user_id: string;
   name: string;
+  /** 'male' | 'female'; null até o utilizador concluir o ecrã de arranque. */
+  sex: string | null;
+  /** Chave do tema do invólucro oval (`THEMES` em colorThemes.ts); null = rosa padrão. */
+  color_theme: string | null;
   stage: string;
   character_type: string;
   hunger: number;
@@ -45,4 +50,6 @@ export interface PetRow {
   last_event_at: string;
   born_at: string;
   created_at: string;
+  /** Preenchido quando o pet morre; limpo no reset. */
+  died_at: string | null;
 }

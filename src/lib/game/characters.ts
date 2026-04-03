@@ -11,6 +11,23 @@ export interface CharacterDef {
   colors: { body: string; accent: string; eye: string };
 }
 
+/** IDs antigos (réplica Tamagotchi) → IDs neutros. Usado ao ler linhas já gravadas. */
+const LEGACY_CHARACTER_IDS: Record<string, string> = {
+  marutchi: "baby_cared",
+  kinakomotchi: "baby_neglected",
+  tamatchi: "child_cared",
+  hashitamatchi: "child_neglected",
+  mametchi: "teen_cared",
+  kuchipatchi: "teen_neglected",
+  mimitchi: "adult_cared",
+  tarakotchi: "adult_neglected",
+  billotchi: "adult_balanced",
+};
+
+export function normalizeCharacterType(id: string): string {
+  return LEGACY_CHARACTER_IDS[id] ?? id;
+}
+
 /** Care score approximated as avg(hunger, happiness) over stage — engine maps to character. */
 export const CHARACTERS: CharacterDef[] = [
   {
@@ -19,75 +36,79 @@ export const CHARACTERS: CharacterDef[] = [
     stage: "egg",
     minCare: 0,
     maxCare: 5,
-    colors: { body: "#f5e6d3", accent: "#c4a574", eye: "#333" },
+    colors: {
+      body: "#fff8ef",
+      accent: "#8f6a3d",
+      eye: "#333",
+    },
   },
   {
-    id: "marutchi",
-    label: "Marutchi",
+    id: "baby_cared",
+    label: "Bebé bem cuidado",
     stage: "baby",
     minCare: 3,
     maxCare: 5,
     colors: { body: "#ffd4e0", accent: "#ff8fb8", eye: "#2d1b2e" },
   },
   {
-    id: "kinakomotchi",
-    label: "Kinakomotchi",
+    id: "baby_neglected",
+    label: "Bebé mal cuidado",
     stage: "baby",
     minCare: 0,
     maxCare: 2,
     colors: { body: "#e8d4ff", accent: "#b388ff", eye: "#2d1b2e" },
   },
   {
-    id: "tamatchi",
-    label: "Tamatchi",
+    id: "child_cared",
+    label: "Criança bem cuidada",
     stage: "child",
     minCare: 3,
     maxCare: 5,
     colors: { body: "#fff3c4", accent: "#ffc857", eye: "#1a1a1a" },
   },
   {
-    id: "hashitamatchi",
-    label: "Hashitamatchi",
+    id: "child_neglected",
+    label: "Criança mal cuidada",
     stage: "child",
     minCare: 0,
     maxCare: 2,
     colors: { body: "#c4ffd4", accent: "#4caf50", eye: "#1a1a1a" },
   },
   {
-    id: "mametchi",
-    label: "Mametchi",
+    id: "teen_cared",
+    label: "Jovem bem cuidado",
     stage: "teen",
     minCare: 3,
     maxCare: 5,
     colors: { body: "#ffe0ef", accent: "#ff6b9d", eye: "#1a1a1a" },
   },
   {
-    id: "kuchipatchi",
-    label: "Kuchipatchi",
+    id: "teen_neglected",
+    label: "Jovem mal cuidado",
     stage: "teen",
     minCare: 0,
     maxCare: 2,
     colors: { body: "#b8e0ff", accent: "#4a9eff", eye: "#1a1a1a" },
   },
   {
-    id: "mimitchi",
-    label: "Mimitchi",
+    id: "adult_cared",
+    label: "Adulto bem cuidado",
     stage: "adult",
     minCare: 3,
     maxCare: 5,
     colors: { body: "#fff0f6", accent: "#ffbbd0", eye: "#1a1a1a" },
   },
   {
-    id: "tarakotchi",
-    label: "Tarakotchi",
+    id: "adult_neglected",
+    label: "Adulto mal cuidado",
     stage: "adult",
     minCare: 0,
     maxCare: 2,
     colors: { body: "#e0e7ff", accent: "#7c83ff", eye: "#1a1a1a" },
   },
   {
-    id: "billotchi",
-    label: "Bill",
+    id: "adult_balanced",
+    label: "Adulto equilibrado",
     stage: "adult",
     minCare: 2,
     maxCare: 3,
@@ -101,7 +122,7 @@ export function pickCharacterForStage(
 ): string {
   if (stage === "egg") return "egg";
   const pool = CHARACTERS.filter((c) => c.stage === stage);
-  if (!pool.length) return "marutchi";
+  if (!pool.length) return "baby_cared";
   const match = pool.find(
     (c) => careScore >= c.minCare && careScore <= c.maxCare,
   );
@@ -109,5 +130,6 @@ export function pickCharacterForStage(
 }
 
 export function getCharacterDef(id: string): CharacterDef {
-  return CHARACTERS.find((c) => c.id === id) ?? CHARACTERS[1];
+  const normalized = normalizeCharacterType(id);
+  return CHARACTERS.find((c) => c.id === normalized) ?? CHARACTERS[1];
 }

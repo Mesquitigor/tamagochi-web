@@ -4,7 +4,7 @@ create table if not exists public.pets (
   user_id uuid not null references auth.users (id) on delete cascade,
   name text not null default 'Tamago',
   stage text not null default 'egg',
-  character_type text not null default 'marutchi',
+  character_type text not null default 'baby_cared',
   hunger int not null default 5 check (hunger >= 0 and hunger <= 5),
   happiness int not null default 5 check (happiness >= 0 and happiness <= 5),
   discipline int not null default 0 check (discipline >= 0 and discipline <= 5),
@@ -20,7 +20,8 @@ create table if not exists public.pets (
   last_decay_at timestamptz not null default now(),
   last_event_at timestamptz not null default now(),
   born_at timestamptz not null default now(),
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  died_at timestamptz
 );
 
 create unique index if not exists pets_one_per_user on public.pets (user_id);
@@ -71,3 +72,62 @@ create policy "Users update own push subs"
 -- Migração para bases criadas antes de last_event_at (idempotente)
 alter table public.pets
   add column if not exists last_event_at timestamptz not null default now();
+
+alter table public.pets add column if not exists sex text;
+alter table public.pets add column if not exists color_theme text;
+alter table public.pets add column if not exists died_at timestamptz;
+
+-- Perfil: apelido no placar global
+create table if not exists public.profiles (
+  user_id uuid primary key references auth.users (id) on delete cascade,
+  nickname text not null default '',
+  nickname_setup_done boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+alter table public.profiles enable row level security;
+
+create policy "profiles_select_authenticated"
+  on public.profiles for select
+  to authenticated
+  using (true);
+
+create policy "profiles_insert_own"
+  on public.profiles for insert
+  to authenticated
+  with check (auth.uid() = user_id);
+
+create policy "profiles_update_own"
+  on public.profiles for update
+  to authenticated
+  using (auth.uid() = user_id);
+
+alter table public.profiles
+  add column if not exists nickname_setup_done boolean not null default false;
+
+-- Recordes (pets falecidos)
+create table if not exists public.pet_records (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade,
+  pet_name text not null,
+  stage text not null,
+  character_type text not null,
+  age_minutes int not null check (age_minutes >= 0),
+  born_at timestamptz not null,
+  died_at timestamptz not null,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists pet_records_age_desc on public.pet_records (age_minutes desc);
+
+alter table public.pet_records enable row level security;
+
+create policy "pet_records_select_authenticated"
+  on public.pet_records for select
+  to authenticated
+  using (true);
+
+create policy "pet_records_insert_own"
+  on public.pet_records for insert
+  to authenticated
+  with check (auth.uid() = user_id);

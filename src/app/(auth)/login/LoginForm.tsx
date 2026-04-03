@@ -80,6 +80,16 @@ export function LoginForm() {
             {SUPABASE_ENV_HINT}
           </p>
         )}
+        {search.get("error") === "confirmacao" && (
+          <p
+            className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-3 py-3 text-left text-sm text-red-800"
+            role="alert"
+          >
+            Não foi possível confirmar o email (link inválido ou expirado).
+            Tenta registar de novo com o mesmo email para receberes um novo
+            link.
+          </p>
+        )}
         <form
           onSubmit={onSubmit}
           className="flex flex-col gap-3"

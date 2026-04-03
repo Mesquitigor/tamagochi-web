@@ -8,7 +8,7 @@ import {
   friendlyAuthMessage,
   normalizeEmail,
   validateEmailForAuth,
-  validatePasswordPresent,
+  validatePasswordConfirmation,
 } from "@/lib/auth/credentials";
 import { AuthBackdrop } from "@/components/auth/AuthBackdrop";
 import { createClient } from "@/lib/supabase/client";
@@ -18,31 +18,53 @@ export default function RegisterPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [confirmError, setConfirmError] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
+  const [infoMsg, setInfoMsg] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setMsg(null);
+    setInfoMsg(null);
     setEmailError(null);
     setPasswordError(null);
+    setConfirmError(null);
 
     const emailErr = validateEmailForAuth(email);
-    const passErr = validatePasswordPresent(password);
+    const passErr = validatePasswordConfirmation(password, confirmPassword);
     if (emailErr) setEmailError(emailErr);
-    if (passErr) setPasswordError(passErr);
+    if (passErr) {
+      if (passErr.includes("coincidem") || passErr.includes("Repete")) {
+        setConfirmError(passErr);
+      } else {
+        setPasswordError(passErr);
+      }
+    }
     if (emailErr || passErr) return;
 
     const emailNorm = normalizeEmail(email);
     try {
       const supabase = createClient();
-      const { error } = await supabase.auth.signUp({
+      const origin =
+        typeof window !== "undefined" ? window.location.origin : "";
+      const { data, error } = await supabase.auth.signUp({
         email: emailNorm,
         password,
+        options: {
+          emailRedirectTo: origin ? `${origin}/auth/confirm` : undefined,
+        },
       });
       if (error) {
         setMsg(friendlyAuthMessage(error.message));
+        return;
+      }
+      if (!data.session) {
+        setInfoMsg(
+          "Enviámos um link de confirmação para o teu email. Abre-o para ativar a conta; depois usa Entrar com o mesmo email e palavra-passe.",
+        );
         return;
       }
       router.push("/play");
@@ -103,6 +125,7 @@ export default function RegisterPage() {
                 setEmail(e.target.value);
                 setEmailError(null);
                 setMsg(null);
+                setInfoMsg(null);
               }}
               className={`rounded-2xl border-2 px-3 py-2.5 text-pink-950 outline-none focus:border-pink-300 ${
                 emailError ? "border-red-300" : "border-pink-100"
@@ -133,7 +156,9 @@ export default function RegisterPage() {
               onChange={(e) => {
                 setPassword(e.target.value);
                 setPasswordError(null);
+                setConfirmError(null);
                 setMsg(null);
+                setInfoMsg(null);
               }}
               className={`rounded-2xl border-2 px-3 py-2.5 text-pink-950 outline-none focus:border-pink-300 ${
                 passwordError ? "border-red-300" : "border-pink-100"
@@ -146,9 +171,49 @@ export default function RegisterPage() {
               </p>
             ) : null}
           </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="register-confirm" className="sr-only">
+              Confirmar palavra-passe
+            </label>
+            <input
+              id="register-confirm"
+              type="password"
+              name="confirm-password"
+              autoComplete="new-password"
+              aria-invalid={confirmError ? true : undefined}
+              aria-describedby={
+                confirmError ? "register-confirm-err" : undefined
+              }
+              aria-required
+              value={confirmPassword}
+              onChange={(e) => {
+                setConfirmPassword(e.target.value);
+                setConfirmError(null);
+                setMsg(null);
+                setInfoMsg(null);
+              }}
+              className={`rounded-2xl border-2 px-3 py-2.5 text-pink-950 outline-none focus:border-pink-300 ${
+                confirmError ? "border-red-300" : "border-pink-100"
+              }`}
+              placeholder="Confirmar palavra-passe"
+            />
+            {confirmError ? (
+              <p id="register-confirm-err" className="text-sm text-red-600">
+                {confirmError}
+              </p>
+            ) : null}
+          </div>
           {msg && (
             <p className="text-center text-sm text-red-600" role="alert">
               {msg}
+            </p>
+          )}
+          {infoMsg && (
+            <p
+              className="rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-3 text-left text-sm leading-relaxed text-emerald-950"
+              role="status"
+            >
+              {infoMsg}
             </p>
           )}
           <button
@@ -162,6 +227,11 @@ export default function RegisterPage() {
           Já tens conta?{" "}
           <Link href="/login" className="font-semibold text-pink-600 underline">
             Entrar
+          </Link>
+        </p>
+        <p className="mt-3 text-center">
+          <Link href="/" className="text-xs text-pink-700/60 underline">
+            Início
           </Link>
         </p>
       </motion.div>
