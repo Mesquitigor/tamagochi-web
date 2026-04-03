@@ -25,7 +25,7 @@ export function ColorModal({
     <Modal open={open} onClose={onClose} title="Cor do aparelho">
       <p className="mb-3 text-sm text-neutral-600">
         Escolhe a cor do invólucro oval à volta do ecrã. &quot;Padrão&quot;
-        usa o rosa clássico tipo Tamagotchi.
+        é o creme tipo plástico vintage dos brinquedos originais.
       </p>
       <div className="flex flex-wrap gap-3">
         <button

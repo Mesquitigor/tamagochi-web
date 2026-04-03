@@ -1,0 +1,10 @@
+---
+description: Git e contas só Mesquitigor / gmail pessoal; nunca SOAP
+alwaysApply: true
+---
+
+# Identidade e contas — sem SOAP
+
+- Este projeto usa **exclusivamente** **Mesquitigor** (GitHub) e email **higormesquita@gmail.com** para commits, remotes e exemplos de configuração Git.
+- **Nunca** usar, sugerir ou assumir contas **SOAP**: proibido `hmesquita-soap`, `hmesquita@soap.health`, domínio `soap.health`, ou SSH/chaves associadas ao trabalho SOAP.
+- Em `git push`, commits ou docs de setup, não instruir com credenciais SOAP. Se o ambiente usar SSH de outra conta, avisar o utilizador a alinhar SSH/`user.email` com Mesquitigor + gmail pessoal acima.

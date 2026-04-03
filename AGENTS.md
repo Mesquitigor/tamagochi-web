@@ -16,6 +16,12 @@ Documento único para contexto do repositório, armadilhas já vistas e como o m
 - **Testes:** Vitest + Testing Library (unit/integration), Playwright (E2E). Comandos: `npm run test:run`, `npm run test:e2e`.
 - **Idioma da UI:** prioridade **português** (PT) em textos voltados ao utilizador.
 
+## Identidade Git e contas (obrigatório — sem SOAP)
+
+- **Âmbito deste repo:** trabalho **apenas** com a identidade pessoal **Mesquitigor** / **higormesquita@gmail.com**. Commits, `git config user.email`, remotes e push devem coincidir com isso.
+- **Proibido de forma absoluta** neste projeto: qualquer conta, email, GitHub ou credencial **SOAP** / trabalho. Exemplos **não** usar nem sugerir: utilizador `hmesquita-soap`, `hmesquita@soap.health`, domínio `soap.health`, ou chaves SSH / `git` configuradas para a conta SOAP.
+- Se um comando Git (ex.: push) falhar porque o SSH aponta para outra conta, **não** contornar com credenciais SOAP — indicar ao utilizador para corrigir `~/.ssh/config`, remoto `origin` ou `user.email`/`user.name` para **Mesquitigor** + **higormesquita@gmail.com**.
+
 ## Como formular pedidos (evitar retrabalho)
 
 1. **Nomear o alvo com precisão**  

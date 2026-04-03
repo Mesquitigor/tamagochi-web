@@ -115,7 +115,7 @@ export function SetupScreen({
         disabled={
           busy || !name.trim() || name.trim().length > 20 || sex === null
         }
-        className="btn-press btn-press-raised mt-1 w-full max-w-[220px] rounded-2xl bg-pink-500 py-2.5 text-sm font-bold text-white shadow-md disabled:cursor-not-allowed disabled:opacity-45"
+        className="btn-press btn-press-raised mt-1 w-full max-w-[220px] rounded-2xl bg-amber-600 py-2.5 text-sm font-bold text-white shadow-md disabled:cursor-not-allowed disabled:opacity-45"
       >
         Começar!
       </button>

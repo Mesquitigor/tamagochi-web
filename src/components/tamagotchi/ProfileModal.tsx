@@ -34,7 +34,7 @@ export function ProfileModal({
   return (
     <Modal open={open} onClose={onClose} title="Perfil">
       <form
-        className="flex flex-col gap-4 text-pink-900/90"
+        className="flex flex-col gap-4 text-stone-800/90"
         onSubmit={(e) => {
           e.preventDefault();
           setErr(null);
@@ -56,7 +56,7 @@ export function ProfileModal({
         }}
       >
         <label className="flex flex-col gap-1">
-          <span className="text-xs font-semibold text-pink-800/80">
+          <span className="text-xs font-semibold text-stone-700/80">
             Nome do tamagotchi
           </span>
           <input
@@ -64,11 +64,11 @@ export function ProfileModal({
             onChange={(e) => setName(e.target.value)}
             maxLength={20}
             autoComplete="off"
-            className="rounded-2xl border-2 border-pink-200 px-3 py-2 text-pink-950 outline-none focus:border-pink-400"
+            className="rounded-2xl border-2 border-stone-200 px-3 py-2 text-stone-900 outline-none focus:border-amber-500"
           />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-xs font-semibold text-pink-800/80">
+          <span className="text-xs font-semibold text-stone-700/80">
             Apelido no placar
           </span>
           <input
@@ -76,7 +76,7 @@ export function ProfileModal({
             onChange={(e) => setNick(e.target.value)}
             maxLength={24}
             autoComplete="nickname"
-            className="rounded-2xl border-2 border-pink-200 px-3 py-2 text-pink-950 outline-none focus:border-pink-400"
+            className="rounded-2xl border-2 border-stone-200 px-3 py-2 text-stone-900 outline-none focus:border-amber-500"
           />
         </label>
         {err ? (
@@ -87,7 +87,7 @@ export function ProfileModal({
         <button
           type="submit"
           disabled={busy}
-          className="btn-press btn-press-raised rounded-2xl bg-pink-500 py-2.5 font-semibold text-white disabled:opacity-45"
+          className="btn-press btn-press-raised rounded-2xl bg-amber-600 py-2.5 font-semibold text-white disabled:opacity-45"
         >
           Salvar
         </button>

@@ -22,7 +22,7 @@ export function FeedModal({
             onMeal();
             onClose();
           }}
-          className="btn-press btn-press-raised rounded-2xl border-2 border-pink-300 bg-pink-100 py-3 text-center font-semibold text-pink-900"
+          className="btn-press btn-press-raised rounded-2xl border-2 border-stone-300 bg-stone-100 py-3 text-center font-semibold text-stone-800"
         >
           Refeição (+fome, +peso)
         </button>

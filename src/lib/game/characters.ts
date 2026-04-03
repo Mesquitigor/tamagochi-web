@@ -48,7 +48,7 @@ export const CHARACTERS: CharacterDef[] = [
     stage: "baby",
     minCare: 3,
     maxCare: 5,
-    colors: { body: "#ffd4e0", accent: "#ff8fb8", eye: "#2d1b2e" },
+    colors: { body: "#f5ebe0", accent: "#b45309", eye: "#2d1b2e" },
   },
   {
     id: "baby_neglected",
@@ -80,7 +80,7 @@ export const CHARACTERS: CharacterDef[] = [
     stage: "teen",
     minCare: 3,
     maxCare: 5,
-    colors: { body: "#ffe0ef", accent: "#ff6b9d", eye: "#1a1a1a" },
+    colors: { body: "#f0e8de", accent: "#92400e", eye: "#1a1a1a" },
   },
   {
     id: "teen_neglected",
@@ -88,7 +88,7 @@ export const CHARACTERS: CharacterDef[] = [
     stage: "teen",
     minCare: 0,
     maxCare: 2,
-    colors: { body: "#b8e0ff", accent: "#4a9eff", eye: "#1a1a1a" },
+    colors: { body: "#d6d3d1", accent: "#57534e", eye: "#1a1a1a" },
   },
   {
     id: "adult_cared",
@@ -96,7 +96,7 @@ export const CHARACTERS: CharacterDef[] = [
     stage: "adult",
     minCare: 3,
     maxCare: 5,
-    colors: { body: "#fff0f6", accent: "#ffbbd0", eye: "#1a1a1a" },
+    colors: { body: "#faf3ea", accent: "#a16207", eye: "#1a1a1a" },
   },
   {
     id: "adult_neglected",
@@ -104,7 +104,7 @@ export const CHARACTERS: CharacterDef[] = [
     stage: "adult",
     minCare: 0,
     maxCare: 2,
-    colors: { body: "#e0e7ff", accent: "#7c83ff", eye: "#1a1a1a" },
+    colors: { body: "#d6d3d1", accent: "#44403c", eye: "#1a1a1a" },
   },
   {
     id: "adult_balanced",

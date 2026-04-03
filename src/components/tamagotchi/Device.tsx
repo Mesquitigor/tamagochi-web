@@ -8,14 +8,14 @@ const baseClassName =
   "relative mx-auto w-full max-w-[540px] overflow-hidden rounded-[48%_48%_42%_42%/55%_55%_40%_40%] border-[12px] px-12 pb-12 pt-14";
 
 const defaultShellClassName =
-  "border-pink-200 bg-gradient-to-b from-[#fff0f6] via-[#ffe0ee] to-[#ffc9da] shadow-[0_20px_40px_-12px_rgba(236,72,153,.35)]";
+  "border-[#d4c9bb] bg-gradient-to-b from-[#fffdf8] via-[#f5efe6] to-[#e0d4c4] shadow-[0_20px_40px_-12px_rgba(110,95,80,.32)]";
 
 export function Device({
   children,
   shellThemeId,
 }: {
   children: ReactNode;
-  /** Chave em `THEMES` (coluna `color_theme`); null = rosa clássico. */
+  /** Chave em `THEMES` (coluna `color_theme`); null = creme clássico. */
   shellThemeId?: string | null;
 }) {
   const shell = shellThemeOrNull(shellThemeId);

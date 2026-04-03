@@ -65,7 +65,7 @@ export function NicknameSetupScreen({
       <button
         type="submit"
         disabled={busy || !nickname.trim() || nickname.trim().length > 24}
-        className="btn-press btn-press-raised w-full max-w-[220px] rounded-2xl bg-pink-500 py-2.5 text-sm font-bold text-white shadow-md disabled:cursor-not-allowed disabled:opacity-45"
+        className="btn-press btn-press-raised w-full max-w-[220px] rounded-2xl bg-amber-600 py-2.5 text-sm font-bold text-white shadow-md disabled:cursor-not-allowed disabled:opacity-45"
       >
         Continuar
       </button>

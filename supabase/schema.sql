@@ -92,6 +92,11 @@ create policy "profiles_select_authenticated"
   to authenticated
   using (true);
 
+create policy "profiles_select_anon"
+  on public.profiles for select
+  to anon
+  using (true);
+
 create policy "profiles_insert_own"
   on public.profiles for insert
   to authenticated
@@ -125,6 +130,11 @@ alter table public.pet_records enable row level security;
 create policy "pet_records_select_authenticated"
   on public.pet_records for select
   to authenticated
+  using (true);
+
+create policy "pet_records_select_anon"
+  on public.pet_records for select
+  to anon
   using (true);
 
 create policy "pet_records_insert_own"

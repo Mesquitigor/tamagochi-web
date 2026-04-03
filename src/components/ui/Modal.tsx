@@ -28,16 +28,16 @@ export function Modal({
       <motion.div
         initial={{ y: 24, opacity: 0.94 }}
         animate={{ y: 0, opacity: 1 }}
-        className="w-full max-w-sm rounded-3xl border-2 border-[#ffb8d0] bg-[#fff6fa] p-4 shadow-xl shadow-pink-200/60"
+        className="w-full max-w-sm rounded-3xl border-2 border-[#d4c9bb] bg-[#faf7f2] p-4 shadow-xl shadow-stone-400/25"
       >
         <div className="mb-3 flex items-center justify-between gap-2">
-          <h2 id="modal-title" className="text-lg font-bold text-pink-900">
+          <h2 id="modal-title" className="text-lg font-bold text-stone-800">
             {title}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="btn-press rounded-full px-3 py-1 text-sm text-pink-600 hover:bg-pink-100 active:bg-pink-200/80"
+            className="btn-press rounded-full px-3 py-1 text-sm text-amber-800 hover:bg-amber-100 active:bg-amber-200/80"
           >
             Fechar
           </button>

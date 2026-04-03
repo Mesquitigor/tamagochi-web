@@ -4,8 +4,8 @@
   "description": "O teu tamagotchi no telemóvel",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fef3f8",
-  "theme_color": "#ff8fb8",
+  "background_color": "#faf7f2",
+  "theme_color": "#b45309",
   "orientation": "portrait-primary",
   "icons": [
     {

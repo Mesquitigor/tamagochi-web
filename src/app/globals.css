@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fff5fc;
-  --foreground: #3f0d1f;
+  --background: #faf7f2;
+  --foreground: #292524;
 }
 
 @theme inline {
@@ -18,8 +18,8 @@ body {
 }
 
 ::selection {
-  background: #ffb8d0;
-  color: #2d0a14;
+  background: #fcd34d;
+  color: #1c1917;
 }
 
 button,
@@ -41,12 +41,12 @@ a.btn-press:active {
 
 button.btn-press-raised:not(:disabled),
 a.btn-press-raised {
-  box-shadow: 0 4px 0 rgb(190 24 93 / 0.2);
+  box-shadow: 0 4px 0 rgb(180 83 9 / 0.22);
 }
 
 button.btn-press-raised:not(:disabled):active,
 a.btn-press-raised:active {
-  box-shadow: 0 1px 0 rgb(190 24 93 / 0.18);
+  box-shadow: 0 1px 0 rgb(180 83 9 / 0.2);
 }
 
 @media (prefers-reduced-motion: reduce) {

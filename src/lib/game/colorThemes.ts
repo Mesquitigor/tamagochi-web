@@ -1,6 +1,6 @@
 /**
  * Temas do invólucro oval (Device), não do sprite pixel do pet.
- * `color_theme` na BD guarda a chave ou null (padrão rosa clássico).
+ * `color_theme` na BD guarda a chave ou null (padrão creme tipo plástico vintage).
  */
 
 export interface ShellTheme {
@@ -13,14 +13,15 @@ export interface ShellTheme {
 }
 
 export const THEMES = {
+  /** Plástico creme/areia (brinquedo real); chave histórica `rosa` na BD continua válida. */
   rosa: {
-    label: "Rosa",
+    label: "Creme",
     shell: {
-      border: "#fbcfe8",
-      from: "#fff0f6",
-      via: "#ffe0ee",
-      to: "#ffc9da",
-      shadow: "236, 72, 153",
+      border: "#c9b8a4",
+      from: "#fffdf8",
+      via: "#f5efe6",
+      to: "#e0d4c4",
+      shadow: "110, 95, 80",
     },
   },
   azul: {

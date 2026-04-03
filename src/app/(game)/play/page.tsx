@@ -213,20 +213,20 @@ export default function PlayPage() {
 
   if (loading && !pet) {
     return (
-      <div className="flex min-h-[70vh] flex-col items-center justify-center gap-4 bg-[#fff5f9]">
-        <div className="h-14 w-14 animate-bounce rounded-full bg-pink-300" />
-        <p className="text-pink-800/70">A carregar o teu tamagotchi…</p>
+      <div className="flex min-h-[70vh] flex-col items-center justify-center gap-4 bg-[#faf7f2]">
+        <div className="h-14 w-14 animate-bounce rounded-full bg-amber-500" />
+        <p className="text-stone-700/70">A carregar o teu tamagotchi…</p>
       </div>
     );
   }
 
   if (error || !pet) {
     return (
-      <div className="flex min-h-[70vh] flex-col items-center justify-center gap-4 bg-[#fff5f9] px-4 text-center">
-        <p className="text-pink-900">
+      <div className="flex min-h-[70vh] flex-col items-center justify-center gap-4 bg-[#faf7f2] px-4 text-center">
+        <p className="text-stone-800">
           {error ?? "Configure o Supabase (.env) e rode o SQL em supabase/schema.sql."}
         </p>
-        <Link href="/login" className="text-pink-600 underline">
+        <Link href="/login" className="text-amber-800 underline">
           Voltar ao login
         </Link>
       </div>
@@ -235,9 +235,9 @@ export default function PlayPage() {
 
   if (profileGate.status === "loading") {
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center gap-3 bg-gradient-to-b from-[#fff5fc] via-[#ffe8f2] to-[#ffd6e8] px-4">
-        <div className="h-12 w-12 animate-pulse rounded-full bg-pink-300/80" />
-        <p className="text-sm text-pink-800/70">A preparar a tua conta…</p>
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-3 bg-gradient-to-b from-[#fdfcfa] via-[#f5f0e8] to-[#e8dfd4] px-4">
+        <div className="h-12 w-12 animate-pulse rounded-full bg-amber-500/80" />
+        <p className="text-sm text-stone-700/70">A preparar a tua conta…</p>
       </div>
     );
   }
@@ -246,20 +246,20 @@ export default function PlayPage() {
 
   if (needsNicknameOnboarding) {
     return (
-      <div className="min-h-dvh bg-gradient-to-b from-[#fff5fc] via-[#ffe8f2] to-[#ffd6e8] px-3 py-6">
+      <div className="min-h-dvh bg-gradient-to-b from-[#fdfcfa] via-[#f5f0e8] to-[#e8dfd4] px-3 py-6">
         <motion.header
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           className="mx-auto mb-4 flex max-w-md items-center justify-between gap-2"
         >
           <div>
-            <h1 className="text-lg font-bold text-pink-950">Tamagotchi Web</h1>
-            <p className="text-xs text-pink-800/65">Primeiro passo · apelido</p>
+            <h1 className="text-lg font-bold text-stone-900">Tamagotchi Web</h1>
+            <p className="text-xs text-stone-700/65">Primeiro passo · apelido</p>
           </div>
           <button
             type="button"
             onClick={() => void signOut()}
-            className="btn-press rounded-full bg-pink-900/10 px-3 py-1.5 text-xs text-pink-900 active:bg-pink-900/20"
+            className="btn-press rounded-full bg-stone-800/10 px-3 py-1.5 text-xs text-stone-800 active:bg-stone-800/20"
           >
             Sair
           </button>
@@ -293,20 +293,20 @@ export default function PlayPage() {
 
   if (needsSetup) {
     return (
-      <div className="min-h-dvh bg-gradient-to-b from-[#fff5fc] via-[#ffe8f2] to-[#ffd6e8] px-3 py-6">
+      <div className="min-h-dvh bg-gradient-to-b from-[#fdfcfa] via-[#f5f0e8] to-[#e8dfd4] px-3 py-6">
         <motion.header
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           className="mx-auto mb-4 flex max-w-md items-center justify-between gap-2"
         >
           <div>
-            <h1 className="text-lg font-bold text-pink-950">Tamagotchi Web</h1>
-            <p className="text-xs text-pink-800/65">Novo tamagotchi</p>
+            <h1 className="text-lg font-bold text-stone-900">Tamagotchi Web</h1>
+            <p className="text-xs text-stone-700/65">Novo tamagotchi</p>
           </div>
           <button
             type="button"
             onClick={() => void signOut()}
-            className="btn-press rounded-full bg-pink-900/10 px-3 py-1.5 text-xs text-pink-900 active:bg-pink-900/20"
+            className="btn-press rounded-full bg-stone-800/10 px-3 py-1.5 text-xs text-stone-800 active:bg-stone-800/20"
           >
             Sair
           </button>
@@ -333,15 +333,15 @@ export default function PlayPage() {
   }
 
   return (
-    <div className="min-h-dvh bg-gradient-to-b from-[#fff5fc] via-[#ffe8f2] to-[#ffd6e8] px-3 py-6">
+    <div className="min-h-dvh bg-gradient-to-b from-[#fdfcfa] via-[#f5f0e8] to-[#e8dfd4] px-3 py-6">
       <motion.header
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         className="mx-auto mb-4 flex max-w-md items-center justify-between gap-2"
       >
         <div>
-          <h1 className="text-lg font-bold text-pink-950">Tamagotchi Web</h1>
-          <p className="text-xs text-pink-800/65">
+          <h1 className="text-lg font-bold text-stone-900">Tamagotchi Web</h1>
+          <p className="text-xs text-stone-700/65">
             {pet.name} {!pet.is_alive ? "… descansou" : `· ${pet.stage}`}
           </p>
         </div>
@@ -354,7 +354,7 @@ export default function PlayPage() {
             className={`btn-press rounded-full px-3 py-1.5 text-xs font-medium shadow-sm ring-1 ${
               subscribed
                 ? "bg-green-50 text-green-700 ring-green-300"
-                : "bg-white/80 text-pink-800 ring-pink-200"
+                : "bg-white/80 text-stone-700 ring-stone-200"
             }`}
           >
             {subscribed ? "🔔 Ativas" : "Notificações"}
@@ -362,7 +362,7 @@ export default function PlayPage() {
           <button
             type="button"
             onClick={() => setLeaderboardOpen(true)}
-            className="btn-press rounded-full bg-white/80 px-3 py-1.5 text-xs font-medium text-pink-800 shadow-sm ring-1 ring-pink-200"
+            className="btn-press rounded-full bg-white/80 px-3 py-1.5 text-xs font-medium text-stone-700 shadow-sm ring-1 ring-stone-200"
           >
             Placar
           </button>
@@ -370,7 +370,7 @@ export default function PlayPage() {
             <button
               type="button"
               onClick={() => setColorOpen(true)}
-              className="btn-press rounded-full bg-white/80 px-3 py-1.5 text-xs font-medium text-pink-800 shadow-sm ring-1 ring-pink-200"
+              className="btn-press rounded-full bg-white/80 px-3 py-1.5 text-xs font-medium text-stone-700 shadow-sm ring-1 ring-stone-200"
             >
               Cor
             </button>
@@ -378,14 +378,14 @@ export default function PlayPage() {
           <button
             type="button"
             onClick={() => setProfileOpen(true)}
-            className="btn-press rounded-full bg-white/80 px-3 py-1.5 text-xs font-medium text-pink-800 shadow-sm ring-1 ring-pink-200"
+            className="btn-press rounded-full bg-white/80 px-3 py-1.5 text-xs font-medium text-stone-700 shadow-sm ring-1 ring-stone-200"
           >
             Perfil
           </button>
           <button
             type="button"
             onClick={() => void signOut()}
-            className="btn-press rounded-full bg-pink-900/10 px-3 py-1.5 text-xs text-pink-900 active:bg-pink-900/20"
+            className="btn-press rounded-full bg-stone-800/10 px-3 py-1.5 text-xs text-stone-800 active:bg-stone-800/20"
           >
             Sair
           </button>
@@ -423,7 +423,7 @@ export default function PlayPage() {
               <button
                 type="button"
                 onClick={() => void resetPet().then(() => playBeep("ok"))}
-                className="btn-press btn-press-raised rounded-full bg-pink-500 px-5 py-2 text-sm font-bold text-white"
+                className="btn-press btn-press-raised rounded-full bg-amber-600 px-5 py-2 text-sm font-bold text-white"
               >
                 Novo ovo
               </button>
@@ -465,7 +465,7 @@ export default function PlayPage() {
         onClose={() => setNotifDisableOpen(false)}
         title="Notificações"
       >
-        <div className="space-y-4 text-pink-900/90">
+        <div className="space-y-4 text-stone-800/90">
           <p className="text-sm leading-relaxed">
             As notificações já estão ativas. Queres desativar? Deixarás de
             receber avisos no telemóvel quando o teu tamagotchi precisar de
@@ -475,7 +475,7 @@ export default function PlayPage() {
             <button
               type="button"
               onClick={() => setNotifDisableOpen(false)}
-              className="btn-press order-2 rounded-2xl border-2 border-pink-200 bg-white px-4 py-2.5 text-sm font-semibold text-pink-800 sm:order-1"
+              className="btn-press order-2 rounded-2xl border-2 border-stone-200 bg-white px-4 py-2.5 text-sm font-semibold text-stone-700 sm:order-1"
             >
               Cancelar
             </button>
@@ -488,7 +488,7 @@ export default function PlayPage() {
                   else playBeep("low");
                 })
               }
-              className="btn-press btn-press-raised order-1 rounded-2xl bg-pink-500 px-4 py-2.5 text-sm font-semibold text-white sm:order-2"
+              className="btn-press btn-press-raised order-1 rounded-2xl bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white sm:order-2"
             >
               Desativar
             </button>
@@ -513,6 +513,7 @@ export default function PlayPage() {
       <GameModal
         open={gameOpen}
         onClose={() => setGameOpen(false)}
+        characterId={pet.character_type}
         onResult={async (won) => {
           await doAction("play", won);
           setOverlayAnim(won ? "happy" : "sad");
@@ -571,7 +572,7 @@ export default function PlayPage() {
         }}
       />
 
-      <p className="mx-auto mt-6 max-w-sm text-center text-[11px] text-pink-900/45">
+      <p className="mx-auto mt-6 max-w-sm text-center text-[11px] text-stone-600/45">
         Dica: instale o Tamagotchi Web no ecrã inicial para o teu tamagotchi te avisar
         (Safari iOS 16.4+).
       </p>

@@ -24,13 +24,13 @@ export function StatsModal({
   return (
     <Modal open={open} onClose={onClose} title={`${pet.name} · ${ch.label}`}>
       <div className="space-y-2 rounded-2xl bg-white/70 p-3">
-        <p className="text-sm text-pink-900/85">
+        <p className="text-sm text-stone-800/85">
           Sexo: <span className="font-medium">{sexLabel}</span>
         </p>
         <Hearts value={pet.hunger} label="Fome" />
         <Hearts value={pet.happiness} label="Felicidade" />
         <Hearts value={pet.discipline} label="Disciplina" />
-        <p className="pt-2 text-sm text-pink-900/80">
+        <p className="pt-2 text-sm text-stone-800/80">
           Peso: {pet.weight}g · Estágio: {pet.stage} · Cocô: {pet.poop_count}
         </p>
         {pet.is_sick && (

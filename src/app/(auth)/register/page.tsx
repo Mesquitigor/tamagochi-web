@@ -83,12 +83,12 @@ export default function RegisterPage() {
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-sm rounded-[2rem] border-4 border-pink-200/90 bg-white/88 p-6 shadow-2xl shadow-pink-900/20 backdrop-blur-md"
+        className="w-full max-w-sm rounded-[2rem] border-4 border-stone-300/90 bg-white/88 p-6 shadow-2xl shadow-stone-900/15 backdrop-blur-md"
       >
-        <h1 className="mb-1 text-center text-2xl font-bold text-pink-950">
+        <h1 className="mb-1 text-center text-2xl font-bold text-stone-900">
           Criar conta
         </h1>
-        <p className="mb-6 text-center text-sm text-pink-800/70">
+        <p className="mb-6 text-center text-sm text-stone-700/70">
           Um tamagotchi por utilizador
         </p>
         {!hasSupabaseEnv() && (
@@ -127,8 +127,8 @@ export default function RegisterPage() {
                 setMsg(null);
                 setInfoMsg(null);
               }}
-              className={`rounded-2xl border-2 px-3 py-2.5 text-pink-950 outline-none focus:border-pink-300 ${
-                emailError ? "border-red-300" : "border-pink-100"
+              className={`rounded-2xl border-2 px-3 py-2.5 text-stone-900 outline-none focus:border-amber-400 ${
+                emailError ? "border-red-300" : "border-stone-200"
               }`}
               placeholder="Email"
             />
@@ -160,8 +160,8 @@ export default function RegisterPage() {
                 setMsg(null);
                 setInfoMsg(null);
               }}
-              className={`rounded-2xl border-2 px-3 py-2.5 text-pink-950 outline-none focus:border-pink-300 ${
-                passwordError ? "border-red-300" : "border-pink-100"
+              className={`rounded-2xl border-2 px-3 py-2.5 text-stone-900 outline-none focus:border-amber-400 ${
+                passwordError ? "border-red-300" : "border-stone-200"
               }`}
               placeholder="Palavra-passe"
             />
@@ -192,8 +192,8 @@ export default function RegisterPage() {
                 setMsg(null);
                 setInfoMsg(null);
               }}
-              className={`rounded-2xl border-2 px-3 py-2.5 text-pink-950 outline-none focus:border-pink-300 ${
-                confirmError ? "border-red-300" : "border-pink-100"
+              className={`rounded-2xl border-2 px-3 py-2.5 text-stone-900 outline-none focus:border-amber-400 ${
+                confirmError ? "border-red-300" : "border-stone-200"
               }`}
               placeholder="Confirmar palavra-passe"
             />
@@ -218,19 +218,19 @@ export default function RegisterPage() {
           )}
           <button
             type="submit"
-            className="btn-press btn-press-raised mt-1 rounded-2xl bg-pink-500 py-3 font-semibold text-white shadow-md shadow-pink-300/60"
+            className="btn-press btn-press-raised mt-1 rounded-2xl bg-amber-600 py-3 font-semibold text-white shadow-md shadow-amber-900/25"
           >
             Registar
           </button>
         </form>
-        <p className="mt-4 text-center text-sm text-pink-800/75">
+        <p className="mt-4 text-center text-sm text-stone-700/75">
           Já tens conta?{" "}
-          <Link href="/login" className="font-semibold text-pink-600 underline">
+          <Link href="/login" className="font-semibold text-amber-800 underline">
             Entrar
           </Link>
         </p>
         <p className="mt-3 text-center">
-          <Link href="/" className="text-xs text-pink-700/60 underline">
+          <Link href="/" className="text-xs text-stone-600/60 underline">
             Início
           </Link>
         </p>
