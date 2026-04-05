@@ -4,6 +4,8 @@ export type LeaderboardEntry = {
   nickname: string;
   stage: string;
   age_minutes: number;
-  died_at: string;
+  /** `null` = pet a jogar (idade actual). */
+  died_at: string | null;
   user_id: string;
+  is_alive: boolean;
 };

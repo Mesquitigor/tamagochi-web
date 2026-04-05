@@ -1,12 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Modal } from "@/components/ui/Modal";
 import {
   formatLeaderboardDiedAt,
   formatLeaderboardDuration,
 } from "@/lib/leaderboard/format";
 import type { LeaderboardEntry } from "@/types/leaderboard";
+
+const REFRESH_MS = 60 * 60 * 1000;
+const MODAL_LIMIT = 50;
 
 export function LeaderboardModal({
   open,
@@ -20,48 +23,63 @@ export function LeaderboardModal({
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
+  const fetchList = useCallback(async () => {
+    setErr(null);
+    const r = await fetch(`/api/leaderboard?limit=${MODAL_LIMIT}`, {
+      credentials: "same-origin",
+    });
+    const j = (await r.json()) as {
+      records?: LeaderboardEntry[];
+      me?: string;
+      error?: string;
+    };
+    if (!r.ok) throw new Error(j.error ?? "Erro ao carregar");
+    setRecords(j.records ?? []);
+    setMe(j.me ?? null);
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
-    queueMicrotask(() => {
-      if (cancelled) return;
-      setLoading(true);
-      setErr(null);
-      void fetch("/api/leaderboard")
-        .then(async (r) => {
-          const j = (await r.json()) as {
-            records?: LeaderboardEntry[];
-            me?: string;
-            error?: string;
-          };
-          if (!r.ok) throw new Error(j.error ?? "Erro ao carregar");
-          if (!cancelled) {
-            setRecords(j.records ?? []);
-            setMe(j.me ?? null);
-          }
-        })
-        .catch((e: unknown) => {
+
+    const run = () => {
+      queueMicrotask(async () => {
+        if (cancelled) return;
+        setLoading(true);
+        try {
+          await fetchList();
+        } catch (e: unknown) {
           if (!cancelled)
             setErr(e instanceof Error ? e.message : "Erro ao carregar");
-        })
-        .finally(() => {
+        } finally {
           if (!cancelled) setLoading(false);
-        });
-    });
+        }
+      });
+    };
+
+    run();
+    const hourly = window.setInterval(run, REFRESH_MS);
+    const onVis = () => {
+      if (document.visibilityState === "visible") run();
+    };
+    document.addEventListener("visibilitychange", onVis);
+
     return () => {
       cancelled = true;
+      window.clearInterval(hourly);
+      document.removeEventListener("visibilitychange", onVis);
     };
-  }, [open]);
+  }, [open, fetchList]);
 
   return (
     <Modal open={open} onClose={onClose} title="Placar — maior duração">
       <div className="max-h-[min(70vh,28rem)] space-y-3 overflow-y-auto text-stone-800/90">
         <p className="text-xs leading-relaxed text-stone-700/75">
-          Ordenado pelo tempo de vida (idade em minutos) quando o pet foi
-          registado ao renascer. Só entram pets que chegaram ao fim e tens
-          «Novo ovo».
+          Pets <strong>vivos</strong> com a idade actual; <strong>registos</strong>{" "}
+          de corridas já terminadas. Ordenado por minutos de vida. Actualiza ao
+          abrir e a cada hora.
         </p>
-        {loading ? (
+        {loading && records.length === 0 ? (
           <p className="text-sm text-stone-700/70">A carregar…</p>
         ) : err ? (
           <p className="text-sm text-red-700" role="alert">
@@ -69,8 +87,7 @@ export function LeaderboardModal({
           </p>
         ) : records.length === 0 ? (
           <p className="text-sm text-stone-700/70">
-            Ainda não há recordes. Quando um tamagotchi partir e iniciares um novo
-            ovo, o último percurso aparece aqui.
+            Ainda não há entradas no placar.
           </p>
         ) : (
           <ol className="space-y-2">
@@ -78,17 +95,26 @@ export function LeaderboardModal({
               const mine = me && row.user_id === me;
               return (
                 <li
-                  key={`${row.rank}-${row.user_id}-${row.died_at}-${row.pet_name}`}
+                  key={`${row.rank}-${row.user_id}-${
+                    row.is_alive ? "live" : row.died_at
+                  }-${row.pet_name}`}
                   className={`rounded-xl border px-3 py-2 text-sm ${
                     mine
                       ? "border-amber-500 bg-amber-50/90"
-                      : "border-stone-200/60 bg-white/60"
+                      : row.is_alive
+                        ? "border-emerald-200/80 bg-emerald-50/35"
+                        : "border-stone-200/60 bg-white/60"
                   }`}
                 >
                   <div className="flex flex-wrap items-baseline justify-between gap-1">
                     <span className="font-bold text-stone-900">
                       #{row.rank}{" "}
                       <span className="font-semibold">{row.pet_name}</span>
+                      {row.is_alive ? (
+                        <span className="ml-1 text-[10px] font-semibold uppercase text-emerald-800">
+                          vivo
+                        </span>
+                      ) : null}
                     </span>
                     <span className="font-mono text-xs font-medium text-stone-800/85">
                       {formatLeaderboardDuration(row.age_minutes)}

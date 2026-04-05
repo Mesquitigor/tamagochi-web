@@ -1,15 +1,9 @@
 import Link from "next/link";
 import { HomeLeaderboardSection } from "@/components/tamagotchi/HomeLeaderboardSection";
-import { loadLeaderboardEntries } from "@/lib/leaderboard/loadEntries";
-import { getSupabaseForPublicLeaderboard } from "@/lib/supabase/forPublicLeaderboard";
 
 const HOME_LEADERBOARD_LIMIT = 8;
 
-export default async function Home() {
-  const supabase = await getSupabaseForPublicLeaderboard();
-  const { records: leaderboardEntries, error: leaderboardError } =
-    await loadLeaderboardEntries(supabase, HOME_LEADERBOARD_LIMIT);
-
+export default function Home() {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-gradient-to-b from-[#fdfcfa] via-[#f5f0e8] to-[#e8dfd4] px-6 py-12 text-center">
       <div className="mb-8 inline-flex h-24 w-20 items-center justify-center rounded-[50%] border-[6px] border-stone-300 bg-gradient-to-b from-[#fff8eb] to-[#e7dfd3] shadow-lg shadow-stone-500/20">
@@ -24,10 +18,7 @@ export default async function Home() {
         O teu tamagotchi no telemóvel: fome, felicidade, evolução e notificações
         quando precisa de ti — inspiração clássica, visual fofo e moderno.
       </p>
-      <HomeLeaderboardSection
-        entries={leaderboardEntries}
-        error={leaderboardError}
-      />
+      <HomeLeaderboardSection limit={HOME_LEADERBOARD_LIMIT} />
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
         <Link
           href="/login"

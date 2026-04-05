@@ -11,7 +11,8 @@ export function formatLeaderboardDuration(totalMinutes: number): string {
   return parts.join(" ");
 }
 
-export function formatLeaderboardDiedAt(iso: string): string {
+export function formatLeaderboardDiedAt(iso: string | null): string {
+  if (iso == null || iso === "") return "A jogar";
   try {
     return new Date(iso).toLocaleString("pt-PT", {
       dateStyle: "short",

@@ -32,6 +32,11 @@ create policy "Users read own pet"
   on public.pets for select
   using (auth.uid() = user_id);
 
+create policy "pets_select_live_leaderboard"
+  on public.pets for select
+  to anon, authenticated
+  using (is_alive = true);
+
 create policy "Users insert own pet"
   on public.pets for insert
   with check (auth.uid() = user_id);
