@@ -5,6 +5,7 @@ import { reduceAction } from "@/lib/game/engine";
 import { evaluateNotificationTriggers } from "@/lib/game/notifications";
 import type { PetAction } from "@/types/pet";
 import { petRowFromDb } from "@/lib/pets/fromDbRow";
+import { tryInsertPetRecordOnDeathTransition } from "@/lib/pets/petRecordInsert";
 import webpush from "web-push";
 
 async function maybePush(
@@ -110,6 +111,15 @@ export async function POST(req: Request) {
 
   if (upErr)
     return NextResponse.json({ error: upErr.message }, { status: 500 });
+
+  const rec = await tryInsertPetRecordOnDeathTransition(
+    supabase,
+    prev.is_alive,
+    next,
+    user.id,
+  );
+  if (rec.error)
+    return NextResponse.json({ error: rec.error }, { status: 500 });
 
   const note = evaluateNotificationTriggers(next, prev, {
     randomEventAlert,

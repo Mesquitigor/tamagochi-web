@@ -130,6 +130,9 @@ create table if not exists public.pet_records (
 
 create index if not exists pet_records_age_desc on public.pet_records (age_minutes desc);
 
+create unique index if not exists pet_records_user_id_died_at_key
+  on public.pet_records (user_id, died_at);
+
 alter table public.pet_records enable row level security;
 
 create policy "pet_records_select_authenticated"

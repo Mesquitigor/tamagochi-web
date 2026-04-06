@@ -8,6 +8,7 @@ import {
 import { applyDecay } from "@/lib/game/engine";
 import { isValidColorThemeId } from "@/lib/game/colorThemes";
 import { petRowFromDb } from "@/lib/pets/fromDbRow";
+import { tryInsertPetRecordOnDeathTransition } from "@/lib/pets/petRecordInsert";
 import type { PetRow } from "@/types/pet";
 
 const defaultPet = (userId: string): Omit<PetRow, "id" | "created_at"> => ({
@@ -65,6 +66,7 @@ export async function GET() {
   }
 
   let p = petRowFromDb(pet as Record<string, unknown>);
+  const wasAlive = p.is_alive;
   const beforeStage = p.stage;
   const decayed = applyDecay(p, Date.now());
   p = decayed.pet;
@@ -90,6 +92,15 @@ export async function GET() {
   });
   if (upErr)
     return NextResponse.json({ error: upErr.message }, { status: 500 });
+
+  const rec = await tryInsertPetRecordOnDeathTransition(
+    supabase,
+    wasAlive,
+    p,
+    user.id,
+  );
+  if (rec.error)
+    return NextResponse.json({ error: rec.error }, { status: 500 });
 
   return NextResponse.json({ pet: p, prevStage: beforeStage });
 }

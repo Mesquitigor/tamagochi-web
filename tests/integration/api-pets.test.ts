@@ -24,18 +24,21 @@ function supabaseForPetsGet(opts: {
   user: { id: string } | null;
   existing: Record<string, unknown> | null;
   created?: Record<string, unknown>;
+  petRecordUpsert?: ReturnType<typeof vi.fn>;
 }) {
   let n = 0;
   const created =
     opts.created ?? dbPetRow({ id: "p-new", user_id: opts.user?.id ?? "u1" });
+  const petRecordUpsert =
+    opts.petRecordUpsert ??
+    vi.fn().mockResolvedValue({ error: null });
 
   return {
     auth: {
       getUser: vi.fn().mockResolvedValue({ data: { user: opts.user } }),
     },
     from: vi.fn((table: string) => {
-      if (table !== "pets")
-        return { upsert: vi.fn().mockResolvedValue({ error: null }) };
+      if (table !== "pets") return { upsert: petRecordUpsert };
       n += 1;
       if (n === 1) {
         return {
@@ -101,6 +104,11 @@ function supabaseForAction(opts: {
       getUser: vi.fn().mockResolvedValue({ data: { user: opts.user } }),
     },
     from: vi.fn((table: string) => {
+      if (table === "pet_records") {
+        return {
+          upsert: vi.fn().mockResolvedValue({ error: null }),
+        };
+      }
       if (table === "push_subscriptions") {
         return {
           select: vi.fn(() => ({
@@ -142,7 +150,7 @@ function supabaseForReset(opts: {
     from: vi.fn((table: string) => {
       if (table === "pet_records") {
         return {
-          insert: vi.fn().mockResolvedValue({ error: null }),
+          upsert: vi.fn().mockResolvedValue({ error: null }),
         };
       }
       if (table !== "pets") {
@@ -225,6 +233,37 @@ describe("GET /api/pets", () => {
     expect(res.status).toBe(200);
     const json = (await res.json()) as { pet: { id: string } };
     expect(json.pet.id).toBe("p1");
+  });
+
+  it("200 ao morrer por decaimento grava placar em pet_records", async () => {
+    const nowMs = Date.UTC(2024, 5, 1, 15, 0, 0);
+    const nowIso = new Date(nowMs).toISOString();
+    const spy = vi.spyOn(Date, "now").mockReturnValue(nowMs);
+    const petRecordUpsert = vi.fn().mockResolvedValue({ error: null });
+    const existing = dbPetRow({
+      id: "p1",
+      hunger: 1,
+      happiness: 1,
+      last_decay_at: new Date(nowMs - 100 * 60_000).toISOString(),
+      last_interaction_at: new Date(nowMs - 50 * 60_000).toISOString(),
+      last_event_at: nowIso,
+    });
+    mockCreate.mockResolvedValue(
+      supabaseForPetsGet({
+        user: { id: "u1" },
+        existing,
+        petRecordUpsert,
+      }) as never,
+    );
+    try {
+      const res = await GET();
+      expect(res.status).toBe(200);
+      const json = (await res.json()) as { pet: { is_alive: boolean } };
+      expect(json.pet.is_alive).toBe(false);
+      expect(petRecordUpsert).toHaveBeenCalled();
+    } finally {
+      spy.mockRestore();
+    }
   });
 });
 
